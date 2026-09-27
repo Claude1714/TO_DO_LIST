@@ -16,3 +16,10 @@ Open `index.html` in a browser.
 - Follows the device's light or dark mode
 
 Tasks are saved in the browser's `localStorage`, so they stay on the device and browser that created them.
+
+## Live site
+
+Every push to `main` publishes the app to GitHub Pages:
+https://claude1714.github.io/TO_DO_LIST/
+
+The workflow is in `.github/workflows/pages.yml`. You can also run it by hand from the **Actions** tab.
