@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Checkmark</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#EEF1F0; --card:#FFFFFF; --ink:#1A1F23; --muted:#667077; --line:#D6DCDA;
+  --accent:#2F6F5E; --on-accent:#FFFFFF; --hi:#F6D94A; --warn:#B4462E; --soft:#E3EAE7;
+  --display:"Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#111514; --card:#1A201E; --ink:#E6ECE9; --muted:#95A09B; --line:#2F3835;
+    --accent:#6FC3A8; --on-accent:#0D1714; --hi:#8A7A22; --warn:#F08A70; --soft:#232C29;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#111514; --card:#1A201E; --ink:#E6ECE9; --muted:#95A09B; --line:#2F3835;
+  --accent:#6FC3A8; --on-accent:#0D1714; --hi:#8A7A22; --warn:#F08A70; --soft:#232C29;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);padding-inline:16px;padding-block:48px 72px}
+.app{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.date{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:700 44px/1 var(--display);letter-spacing:-.02em;margin:4px 0 0}
+.progress{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+.bar{width:160px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);transition:width .3s}
+
+form.add{display:flex;gap:8px;flex-wrap:wrap;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:8px}
+form.add:focus-within{border-color:var(--accent)}
+#new-text{flex:1 1 220px;min-width:0;border:0;background:transparent;color:var(--ink);font:inherit;font-size:17px;padding:8px 10px;outline:none}
+#new-due,#new-pri{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font:inherit;font-size:14px;padding:6px 8px}
+.btn{border:0;border-radius:10px;padding:8px 16px;font:700 15px var(--body);cursor:pointer;background:var(--accent);color:var(--on-accent)}
+.btn:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.bar-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.filters{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:12px}
+.filters button{border:0;background:transparent;color:var(--muted);font:700 14px var(--body);padding:6px 14px;border-radius:9px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .12)}
+.link{border:0;background:none;color:var(--muted);font:14px var(--body);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.link:hover{color:var(--warn)}
+
+.note{font-size:14px;color:var(--muted);background:var(--soft);border-radius:10px;padding:10px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+
+ul.list{list-style:none;margin:0;padding:0;background:var(--card);border:1.5px solid var(--line);border-radius:14px;overflow:hidden}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;padding:14px 16px;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.check{appearance:none;width:22px;height:22px;margin:1px 0 0;border:2px solid var(--muted);border-radius:7px;cursor:pointer;display:grid;place-items:center;background:var(--card)}
+.check:checked{background:var(--accent);border-color:var(--accent)}
+.check:checked::after{content:"";width:10px;height:6px;border:solid var(--on-accent);border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
+.body{min-width:0;display:flex;flex-direction:column;gap:4px}
+.text{overflow-wrap:anywhere;cursor:text}
+.item.done .text{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1.5px}
+.meta{display:flex;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.tag{border-radius:6px;padding:0 7px;background:var(--soft)}
+.tag.high{background:var(--hi);color:var(--ink)}
+.tag.late{color:var(--warn);background:transparent;padding:0;font-weight:700}
+.edit{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--accent);border-radius:8px;padding:4px 8px}
+.del{border:0;background:none;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:0 4px;opacity:.5}
+.item:hover .del,.del:focus-visible{opacity:1}
+.del:hover{color:var(--warn)}
+.empty{padding:36px 16px;text-align:center;color:var(--muted)}
+.hint{font-size:13px;color:var(--muted);text-align:center;margin:0}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div>
+      <div class="date" id="today"></div>
+      <h1>To do</h1>
+    </div>
+    <div class="progress"><span id="count"></span><div class="bar"><i id="fill"></i></div></div>
+  </header>
+
+  <form class="add" id="add-form" autocomplete="off">
+    <input id="new-text" placeholder="Add a task and press Enter" aria-label="New task" maxlength="200">
+    <input id="new-due" type="date" aria-label="Due date">
+    <select id="new-pri" aria-label="Priority"><option value="normal">Normal</option><option value="high">High</option></select>
+    <button class="btn" type="submit">Add</button>
+  </form>
+
+  <div class="note" id="sample-note" hidden><span>These are example tasks. Delete them or clear them all.</span><button class="link" id="clear-samples" type="button">Remove examples</button></div>
+
+  <div class="bar-row">
+    <div class="filters" role="group" aria-label="Show">
+      <button type="button" data-f="all" aria-pressed="true">All</button>
+      <button type="button" data-f="active" aria-pressed="false">Active</button>
+      <button type="button" data-f="done" aria-pressed="false">Done</button>
+    </div>
+    <button class="link" id="clear-done" type="button">Clear completed</button>
+  </div>
+
+  <ul class="list" id="list"></ul>
+  <p class="hint">Double-click a task to edit it. Tasks are saved in this browser.</p>
+</main>
+
+<script>
+(function(){
+  const KEY = "checkmark.tasks.v1";
+  const $ = id => document.getElementById(id);
+  const iso = d => d.toISOString().slice(0,10);
+  const now = new Date();
+  const todayStr = iso(new Date(now.getTime() - now.getTimezoneOffset()*60000));
+  const addDays = n => { const d = new Date(todayStr); d.setDate(d.getDate()+n); return iso(d); };
+
+  const samples = [
+    {text:"Push the TO_DO_LIST repo to GitHub", due:todayStr, pri:"high"},
+    {text:"Review the navigation app wireframes", due:addDays(1), pri:"normal"},
+    {text:"Decide miles or kilometers for the map app", due:"", pri:"normal"},
+    {text:"Buy groceries", due:addDays(-1), pri:"normal", done:true}
+  ].map((t,i) => ({id:"s"+i, done:false, sample:true, ...t}));
+
+  let tasks, filter = "all";
+  try { tasks = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+  if (!Array.isArray(tasks)) tasks = samples;
+
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(tasks)); } catch(e) {} };
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+
+  $("today").textContent = now.toLocaleDateString(undefined, {weekday:"long", month:"long", day:"numeric"});
+
+  function dueLabel(due){
+    if (!due) return null;
+    if (due === todayStr) return {t:"Today"};
+    if (due === addDays(1)) return {t:"Tomorrow"};
+    const d = new Date(due + "T00:00");
+    const t = d.toLocaleDateString(undefined, {month:"short", day:"numeric"});
+    return due < todayStr ? {t:"Overdue · " + t, late:true} : {t};
+  }
+
+  function render(){
+    const list = $("list");
+    list.textContent = "";
+    const shown = tasks.filter(t => filter === "all" || (filter === "done" ? t.done : !t.done));
+    // Active first, then by due date (no date last), high priority first on ties
+    shown.sort((a,b) => (a.done - b.done) || ((a.due||"9999") < (b.due||"9999") ? -1 : (a.due||"9999") > (b.due||"9999") ? 1 : 0) || ((b.pri==="high") - (a.pri==="high")));
+
+    for (const t of shown){
+      const li = document.createElement("li");
+      li.className = "item" + (t.done ? " done" : "");
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.className = "check"; cb.checked = t.done; cb.id = "t-" + t.id;
+      cb.setAttribute("aria-label", "Mark “" + t.text + "” done");
+      cb.onchange = () => { t.done = cb.checked; save(); render(); };
+
+      const body = document.createElement("div"); body.className = "body";
+      const text = document.createElement("span"); text.className = "text"; text.textContent = t.text;
+      text.ondblclick = () => startEdit(t, body, text);
+      body.append(text);
+
+      const meta = document.createElement("div"); meta.className = "meta";
+      if (t.pri === "high") meta.insertAdjacentHTML("beforeend", '<span class="tag high">High priority</span>');
+      const dl = dueLabel(t.due);
+      if (dl){ const s = document.createElement("span"); s.className = "tag" + (dl.late && !t.done ? " late" : ""); s.textContent = dl.t; meta.append(s); }
+      if (meta.childNodes.length) body.append(meta);
+
+      const del = document.createElement("button");
+      del.className = "del"; del.type = "button"; del.textContent = "×";
+      del.setAttribute("aria-label", "Delete “" + t.text + "”");
+      del.onclick = () => { tasks = tasks.filter(x => x !== t); save(); render(); };
+
+      li.append(cb, body, del);
+      list.append(li);
+    }
+    if (!shown.length){
+      list.innerHTML = '<li class="empty">' + (filter === "done" ? "Nothing completed yet." : filter === "active" ? "All done. Nice work." : "No tasks yet. Add one above.") + "</li>";
+    }
+
+    const done = tasks.filter(t => t.done).length;
+    const left = tasks.length - done;
+    $("count").textContent = tasks.length ? `${left} left · ${done} of ${tasks.length} done` : "No tasks";
+    $("fill").style.width = tasks.length ? (done / tasks.length * 100) + "%" : "0";
+    $("clear-done").hidden = !done;
+    $("sample-note").hidden = !tasks.some(t => t.sample);
+  }
+
+  function startEdit(t, body, text){
+    const input = document.createElement("input");
+    input.className = "edit"; input.value = t.text; input.maxLength = 200; input.id = "edit-" + t.id;
+    body.replaceChild(input, text); input.focus(); input.select();
+    let finished = false;
+    const finish = keep => {
+      if (finished) return; finished = true;
+      const v = input.value.trim();
+      if (keep && v) { t.text = v; t.sample = false; save(); }
+      render();
+    };
+    input.onkeydown = e => { if (e.key === "Enter") finish(true); if (e.key === "Escape") finish(false); };
+    input.onblur = () => finish(true);
+  }
+
+  $("add-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const text = $("new-text").value.trim();
+    if (!text) { $("new-text").focus(); return; }
+    tasks.push({id:uid(), text, due:$("new-due").value, pri:$("new-pri").value, done:false});
+    $("new-text").value = ""; $("new-due").value = ""; $("new-pri").value = "normal";
+    if (filter === "done") setFilter("all");
+    save(); render(); $("new-text").focus();
+  });
+
+  function setFilter(f){
+    filter = f;
+    document.querySelectorAll(".filters button").forEach(b => b.setAttribute("aria-pressed", b.dataset.f === f));
+  }
+  document.querySelectorAll(".filters button").forEach(b => b.onclick = () => { setFilter(b.dataset.f); render(); });
+  $("clear-done").onclick = () => { tasks = tasks.filter(t => !t.done); save(); render(); };
+  $("clear-samples").onclick = () => { tasks = tasks.filter(t => !t.sample); save(); render(); };
+
+  render();
+})();
+</script>
+</body>
+</html>
